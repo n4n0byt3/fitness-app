@@ -5,7 +5,9 @@
       "Bash(mkdir \"c:\\\\Users\\\\shivb\\\\Desktop\\\\coding bits\\\\fitness-app\\\\app\\\\\\(pt\\)\\\\clients\\\\[id]\")",
       "Bash(mkdir \"c:\\\\Users\\\\shivb\\\\Desktop\\\\coding bits\\\\fitness-app\\\\app\\\\api\\\\invoices\\\\[id]\\\\pdf\")",
       "Bash(npm run *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)"
     ]
   }
 }
