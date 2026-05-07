@@ -62,7 +62,7 @@ export default function Modal({ open, onClose, title, children, size = 'md' }: M
               <X size={18} />
             </button>
           </div>
-          <div className="p-6">{children}</div>
+          <div className="max-h-[70vh] overflow-y-auto p-6">{children}</div>
         </div>
       </div>
     </div>
