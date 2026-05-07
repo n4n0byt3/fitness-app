@@ -1,13 +1,20 @@
 import { Resend } from 'resend'
 
 function getResend() {
-  if (!process.env.RESEND_API_KEY) return null
+  if (!process.env.RESEND_API_KEY) throw new Error('RESEND_API_KEY is not set')
   return new Resend(process.env.RESEND_API_KEY)
 }
 
 const brandName = process.env.NEXT_PUBLIC_BRAND_NAME || "L'Estrange Fitness"
 const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
+
+async function send(payload: Parameters<Resend['emails']['send']>[0]) {
+  const resend = getResend()
+  const { data, error } = await resend.emails.send(payload)
+  if (error) throw new Error(`Resend error: ${error.message}`)
+  return data
+}
 
 export async function sendBookingConfirmation({
   to,
@@ -22,9 +29,7 @@ export async function sendBookingConfirmation({
   time: string
   sessionType: string
 }) {
-  const resend = getResend()
-  if (!resend) return
-  return resend.emails.send({
+  return send({
     from: `${brandName} <${fromEmail}>`,
     to,
     subject: `Booking Confirmed — ${date} at ${time}`,
@@ -60,9 +65,7 @@ export async function sendInvoiceNotification({
   dueDate: string
   paymentUrl: string
 }) {
-  const resend = getResend()
-  if (!resend) return
-  return resend.emails.send({
+  return send({
     from: `${brandName} <${fromEmail}>`,
     to,
     subject: `Invoice — ${amount} due ${dueDate}`,
