@@ -52,14 +52,28 @@ export default function SignupPage() {
       return
     }
 
-    // Email confirmation required — session will be null
+    // Session is null — either confirmation is enabled, or user already exists unconfirmed.
+    // Try signing in directly; if that works, confirmation is disabled and we're good.
     if (data.user && !data.session) {
-      setLoading(false)
-      setAwaitingConfirmation(true)
-      return
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      })
+      if (signInData.session) {
+        toast.success('Account created!')
+        router.push(formData.role === 'pt' ? '/dashboard' : '/portal/dashboard')
+        router.refresh()
+        return
+      }
+      // Couldn't sign in either — confirmation is genuinely required
+      if (signInError) {
+        setLoading(false)
+        setAwaitingConfirmation(true)
+        return
+      }
     }
 
-    // Email confirmation disabled — session exists, redirect immediately
+    // Email confirmation disabled and session returned directly
     if (data.session) {
       toast.success('Account created!')
       router.push(formData.role === 'pt' ? '/dashboard' : '/portal/dashboard')
