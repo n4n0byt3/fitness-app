@@ -47,10 +47,13 @@ export default function SignupPage() {
     })
 
     if (error) {
-      toast.error(error.message)
+      toast.error(`signUp error: ${error.message}`)
       setLoading(false)
       return
     }
+
+    // DEBUG — remove once working
+    toast.info(`signUp: user=${!!data.user} session=${!!data.session}`)
 
     // Session is null — either confirmation is enabled, or user already exists unconfirmed.
     // Try signing in directly; if that works, confirmation is disabled and we're good.
@@ -59,13 +62,14 @@ export default function SignupPage() {
         email: formData.email,
         password: formData.password,
       })
+      // DEBUG — remove once working
+      toast.info(`signIn: session=${!!signInData.session} err=${signInError?.message ?? 'none'}`)
       if (signInData.session) {
         toast.success('Account created!')
         router.push(formData.role === 'pt' ? '/dashboard' : '/portal/dashboard')
         router.refresh()
         return
       }
-      // Couldn't sign in either — confirmation is genuinely required
       if (signInError) {
         setLoading(false)
         setAwaitingConfirmation(true)
