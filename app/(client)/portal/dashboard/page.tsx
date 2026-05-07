@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { formatDate, formatTime, getDaysSince } from '@/lib/utils'
-import { CalendarDays, Flame, Dumbbell, Clock } from 'lucide-react'
+import { CalendarDays, Dumbbell, Clock } from 'lucide-react'
 import Link from 'next/link'
 
 export const metadata: Metadata = { title: 'My Dashboard' }
@@ -89,21 +89,14 @@ export default async function ClientDashboardPage() {
       )}
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 gap-3">
         <div className="rounded-xl border border-[#333333] bg-[#222222] p-4 text-center">
           <p className="text-2xl font-bold text-white">{sessionsThisMonth || 0}</p>
           <p className="mt-0.5 text-[10px] uppercase tracking-wider text-[#888888]">This Month</p>
         </div>
         <div className="rounded-xl border border-[#333333] bg-[#222222] p-4 text-center">
           <p className="text-2xl font-bold text-[#c8c8c8]">{totalSessions || 0}</p>
-          <p className="mt-0.5 text-[10px] uppercase tracking-wider text-[#888888]">Total</p>
-        </div>
-        <div className="rounded-xl border border-[#333333] bg-[#222222] p-4 text-center">
-          <div className="flex items-center justify-center gap-1">
-            <Flame size={18} className="text-amber-400" />
-            <p className="text-2xl font-bold text-white">{daysSince || 0}</p>
-          </div>
-          <p className="mt-0.5 text-[10px] uppercase tracking-wider text-[#888888]">Day Streak</p>
+          <p className="mt-0.5 text-[10px] uppercase tracking-wider text-[#888888]">Total Sessions</p>
         </div>
       </div>
 

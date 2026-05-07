@@ -29,11 +29,24 @@ export default function LoginPage() {
     }
 
     if (data.user) {
-      const { data: profile } = await supabase
+      let { data: profile } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', data.user.id)
         .single()
+
+      // Trigger didn't fire — create profile now from auth metadata
+      if (!profile) {
+        const meta = data.user.user_metadata
+        const role = (meta?.role as string) || 'client'
+        await supabase.from('profiles').upsert({
+          id: data.user.id,
+          full_name: meta?.full_name || '',
+          email: data.user.email,
+          role,
+        })
+        profile = { role }
+      }
 
       if (profile?.role === 'pt') {
         router.push('/dashboard')

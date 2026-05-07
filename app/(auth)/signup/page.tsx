@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { toast } from 'sonner'
-import { Eye, EyeOff, Loader2 } from 'lucide-react'
+import { Eye, EyeOff, Loader2, MailCheck } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import LEstrangeLogo from '@/components/logo/LEstrangeLogo'
 
@@ -19,6 +19,7 @@ export default function SignupPage() {
   })
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [awaitingConfirmation, setAwaitingConfirmation] = useState(false)
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
@@ -51,15 +52,47 @@ export default function SignupPage() {
       return
     }
 
-    if (data.user) {
-      toast.success('Account created! Signing you in…')
-      if (formData.role === 'pt') {
-        router.push('/dashboard')
-      } else {
-        router.push('/portal/dashboard')
-      }
+    // Email confirmation required — session will be null
+    if (data.user && !data.session) {
+      setLoading(false)
+      setAwaitingConfirmation(true)
+      return
+    }
+
+    // Email confirmation disabled — session exists, redirect immediately
+    if (data.session) {
+      toast.success('Account created!')
+      router.push(formData.role === 'pt' ? '/dashboard' : '/portal/dashboard')
       router.refresh()
     }
+  }
+
+  if (awaitingConfirmation) {
+    return (
+      <div className="w-full max-w-sm animate-fade-in">
+        <div className="mb-10 flex flex-col items-center">
+          <LEstrangeLogo size={90} className="mb-6" />
+        </div>
+        <div className="rounded-2xl border border-[#333333] bg-[#222222] p-8 shadow-2xl text-center">
+          <div className="mb-4 flex justify-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#2a2a2a]">
+              <MailCheck size={24} className="text-[#c8c8c8]" />
+            </div>
+          </div>
+          <h2 className="mb-2 text-lg font-semibold uppercase tracking-widest text-white">Check your email</h2>
+          <p className="text-sm text-[#888888]">
+            We&apos;ve sent a confirmation link to <span className="text-[#c8c8c8]">{formData.email}</span>.
+            Click the link to activate your account, then sign in.
+          </p>
+          <Link
+            href="/login"
+            className="mt-6 inline-block text-xs font-semibold uppercase tracking-wider text-[#c8c8c8] hover:text-white transition-colors"
+          >
+            Go to sign in →
+          </Link>
+        </div>
+      </div>
+    )
   }
 
   return (
