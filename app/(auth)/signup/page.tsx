@@ -47,23 +47,16 @@ export default function SignupPage() {
     })
 
     if (error) {
-      toast.error(`signUp error: ${error.message}`)
+      toast.error(error.message)
       setLoading(false)
       return
     }
 
-    // DEBUG — remove once working
-    toast.info(`signUp: user=${!!data.user} session=${!!data.session}`)
-
-    // Session is null — either confirmation is enabled, or user already exists unconfirmed.
-    // Try signing in directly; if that works, confirmation is disabled and we're good.
     if (data.user && !data.session) {
       const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email: formData.email,
         password: formData.password,
       })
-      // DEBUG — remove once working
-      toast.info(`signIn: session=${!!signInData.session} err=${signInError?.message ?? 'none'}`)
       if (signInData.session) {
         toast.success('Account created!')
         router.push(formData.role === 'pt' ? '/dashboard' : '/portal/dashboard')
