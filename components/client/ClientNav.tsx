@@ -9,11 +9,11 @@ import { toast } from 'sonner'
 import LEstrangeLogo from '@/components/logo/LEstrangeLogo'
 
 const nav = [
-  { href: '/portal/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/portal/progress', label: 'My Progress', icon: TrendingUp },
-  { href: '/portal/sessions', label: 'Sessions', icon: Dumbbell },
-  { href: '/portal/bookings', label: 'Book Session', icon: CalendarDays },
-  { href: '/portal/payments', label: 'Payments', icon: CreditCard },
+  { href: '/portal/dashboard', label: 'Dashboard', short: 'Home', icon: LayoutDashboard },
+  { href: '/portal/progress', label: 'My Progress', short: 'Progress', icon: TrendingUp },
+  { href: '/portal/sessions', label: 'Sessions', short: 'Sessions', icon: Dumbbell },
+  { href: '/portal/bookings', label: 'Book Session', short: 'Book', icon: CalendarDays },
+  { href: '/portal/payments', label: 'Payments', short: 'Pay', icon: CreditCard },
 ]
 
 interface ClientNavProps {
@@ -73,13 +73,13 @@ export default function ClientNav({ clientName }: ClientNavProps) {
 
       {/* Mobile Bottom Nav */}
       <nav className="fixed bottom-0 left-0 right-0 z-40 flex items-center border-t border-[#333333] bg-[#1a1a1a]/95 backdrop-blur-md lg:hidden">
-        {nav.map(({ href, label, icon: Icon }) => {
+        {nav.map(({ href, short, icon: Icon }) => {
           const active = pathname === href
           return (
             <Link key={href} href={href}
               className={cn('flex flex-1 flex-col items-center gap-1 py-3', active ? 'text-[#c8c8c8]' : 'text-[#555555]')}>
               <Icon size={19} />
-              <span className="text-[9px] font-semibold uppercase tracking-wide leading-none">{label.split(' ')[0]}</span>
+              <span className="text-[9px] font-semibold uppercase tracking-wide leading-none">{short}</span>
             </Link>
           )
         })}

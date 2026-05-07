@@ -93,35 +93,29 @@ export default function BookingsManager({ ptId, initialBookings, initialAvailabi
           ) : (
             <div className="space-y-2">
               {bookings.map((booking) => (
-                <div key={booking.id} className="flex items-center gap-4 rounded-xl border border-[#333333] bg-[#222222] px-5 py-4">
-                  <div className="w-20 shrink-0">
-                    <p className="text-xs font-semibold text-[#c8c8c8]">{formatDate(booking.date)}</p>
-                    <p className="text-xs text-[#888888]">{formatTime(booking.time)}</p>
-                  </div>
-                  <div className="h-10 w-px bg-[#333333]" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-white">{booking.profiles?.full_name}</p>
-                    <p className="text-xs text-[#888888]">{booking.session_type}</p>
-                  </div>
-                  <StatusBadge status={booking.status} />
-                  {booking.status === 'pending' && (
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => updateBookingStatus(booking.id, 'confirmed')}
-                        className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-colors"
-                        title="Confirm"
-                      >
-                        <Check size={14} />
-                      </button>
-                      <button
-                        onClick={() => updateBookingStatus(booking.id, 'cancelled')}
-                        className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
-                        title="Cancel"
-                      >
-                        <X size={14} />
-                      </button>
+                <div key={booking.id} className="rounded-xl border border-[#333333] bg-[#222222] px-4 py-3.5">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-white">{booking.profiles?.full_name}</p>
+                      <p className="text-xs text-[#888888]">{booking.session_type}</p>
+                      <p className="mt-1 text-xs text-[#c8c8c8]">{formatDate(booking.date)} · {formatTime(booking.time)}</p>
                     </div>
-                  )}
+                    <div className="flex shrink-0 flex-col items-end gap-2">
+                      <StatusBadge status={booking.status} />
+                      {booking.status === 'pending' && (
+                        <div className="flex gap-1.5">
+                          <button onClick={() => updateBookingStatus(booking.id, 'confirmed')}
+                            className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-colors" title="Confirm">
+                            <Check size={14} />
+                          </button>
+                          <button onClick={() => updateBookingStatus(booking.id, 'cancelled')}
+                            className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors" title="Cancel">
+                            <X size={14} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -135,8 +129,8 @@ export default function BookingsManager({ ptId, initialBookings, initialAvailabi
           <p className="text-sm text-[#888888]">Set the days and hours you&apos;re available for sessions.</p>
           <div className="space-y-3">
             {DAYS_OF_WEEK.map((day, i) => (
-              <div key={day} className="flex items-center gap-4 rounded-lg bg-[#1a1a1a] px-4 py-3">
-                <label className="flex items-center gap-3 w-32 shrink-0 cursor-pointer">
+              <div key={day} className="rounded-lg bg-[#1a1a1a] px-4 py-3">
+                <label className="flex cursor-pointer items-center gap-3">
                   <input
                     type="checkbox"
                     checked={availEdit[i].enabled}
@@ -146,19 +140,19 @@ export default function BookingsManager({ ptId, initialBookings, initialAvailabi
                   <span className={cn('text-sm font-medium', availEdit[i].enabled ? 'text-white' : 'text-[#555555]')}>{day}</span>
                 </label>
                 {availEdit[i].enabled && (
-                  <div className="flex items-center gap-2">
+                  <div className="mt-2 flex items-center gap-2 pl-7">
                     <input
                       type="time"
                       value={availEdit[i].start}
                       onChange={(e) => setAvailEdit(prev => ({ ...prev, [i]: { ...prev[i], start: e.target.value } }))}
-                      className="rounded-lg border border-[#333333] bg-[#222222] px-3 py-1.5 text-sm text-white focus:border-[#c8c8c8] focus:outline-none"
+                      className="flex-1 rounded-lg border border-[#333333] bg-[#222222] px-3 py-1.5 text-sm text-white focus:border-[#c8c8c8] focus:outline-none"
                     />
-                    <span className="text-[#555555]">to</span>
+                    <span className="shrink-0 text-xs text-[#555555]">to</span>
                     <input
                       type="time"
                       value={availEdit[i].end}
                       onChange={(e) => setAvailEdit(prev => ({ ...prev, [i]: { ...prev[i], end: e.target.value } }))}
-                      className="rounded-lg border border-[#333333] bg-[#222222] px-3 py-1.5 text-sm text-white focus:border-[#c8c8c8] focus:outline-none"
+                      className="flex-1 rounded-lg border border-[#333333] bg-[#222222] px-3 py-1.5 text-sm text-white focus:border-[#c8c8c8] focus:outline-none"
                     />
                   </div>
                 )}

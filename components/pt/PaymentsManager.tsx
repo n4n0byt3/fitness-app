@@ -93,13 +93,13 @@ export default function PaymentsManager({ ptId, initialInvoices, clients }: Prop
       <div className="space-y-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           {/* Filters */}
-          <div className="flex gap-1 rounded-xl border border-[#333333] bg-[#222222] p-1 w-fit">
+          <div className="flex gap-1 overflow-x-auto rounded-xl border border-[#333333] bg-[#222222] p-1">
             {(['all', 'outstanding', 'paid', 'overdue'] as Filter[]).map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
                 className={cn(
-                  'rounded-lg px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider transition-all',
+                  'shrink-0 rounded-lg px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider transition-all',
                   filter === f ? 'bg-[#c8c8c8]/10 text-white' : 'text-[#555555] hover:text-[#888888]'
                 )}
               >
@@ -120,24 +120,26 @@ export default function PaymentsManager({ ptId, initialInvoices, clients }: Prop
         ) : (
           <div className="space-y-2">
             {filtered.map((invoice) => (
-              <div key={invoice.id} className="flex items-center gap-4 rounded-xl border border-[#333333] bg-[#222222] px-5 py-4">
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-white">{invoice.description}</p>
-                  <p className="text-xs text-[#888888]">
-                    {invoice.client?.full_name} · Due {formatDate(invoice.due_date)}
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <p className="text-sm font-bold text-white">{formatCurrency(invoice.amount)}</p>
-                  <StatusBadge status={invoice.status} />
-                  <a
-                    href={`/api/invoices/${invoice.id}/pdf`}
-                    target="_blank"
-                    className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#333333] text-[#888888] hover:border-[#c8c8c8]/30 hover:text-[#c8c8c8] transition-colors"
-                    title="Download PDF"
-                  >
-                    <Download size={14} />
-                  </a>
+              <div key={invoice.id} className="rounded-xl border border-[#333333] bg-[#222222] px-4 py-3.5">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-white">{invoice.description}</p>
+                    <p className="text-xs text-[#888888]">
+                      {invoice.client?.full_name} · Due {formatDate(invoice.due_date)}
+                    </p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <p className="text-sm font-bold text-white">{formatCurrency(invoice.amount)}</p>
+                    <StatusBadge status={invoice.status} />
+                    <a
+                      href={`/api/invoices/${invoice.id}/pdf`}
+                      target="_blank"
+                      className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#333333] text-[#888888] hover:border-[#c8c8c8]/30 hover:text-[#c8c8c8] transition-colors"
+                      title="Download PDF"
+                    >
+                      <Download size={13} />
+                    </a>
+                  </div>
                 </div>
               </div>
             ))}

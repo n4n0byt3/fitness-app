@@ -76,18 +76,20 @@ export default function ClientPaymentsView({ invoices }: { invoices: Invoice[] }
         ) : (
           <div className="space-y-2">
             {paid.map((invoice) => (
-              <div key={invoice.id} className="flex items-center gap-4 rounded-xl border border-[#333333] bg-[#222222] px-5 py-4">
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-white">{invoice.description}</p>
-                  <p className="text-xs text-[#888888]">{formatDate(invoice.created_at)}</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <p className="text-sm font-bold text-white">{formatCurrency(invoice.amount)}</p>
-                  <StatusBadge status="paid" />
-                  <a href={`/api/invoices/${invoice.id}/pdf`} target="_blank"
-                    className="text-[#555555] hover:text-[#c8c8c8] transition-colors">
-                    <Download size={14} />
-                  </a>
+              <div key={invoice.id} className="rounded-xl border border-[#333333] bg-[#222222] px-4 py-3.5">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-white">{invoice.description}</p>
+                    <p className="text-xs text-[#888888]">{formatDate(invoice.created_at)}</p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <p className="text-sm font-bold text-white">{formatCurrency(invoice.amount)}</p>
+                    <StatusBadge status="paid" />
+                    <a href={`/api/invoices/${invoice.id}/pdf`} target="_blank"
+                      className="text-[#555555] hover:text-[#c8c8c8] transition-colors">
+                      <Download size={14} />
+                    </a>
+                  </div>
                 </div>
               </div>
             ))}

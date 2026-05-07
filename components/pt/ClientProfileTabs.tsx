@@ -411,18 +411,25 @@ function SessionLogModal({ clientId, ptId, onClose, onSaved }: {
           </div>
           <div className="space-y-2">
             {exercises.map((ex, i) => (
-              <div key={i} className="grid gap-2 rounded-lg bg-[#1a1a1a] p-3" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr auto' }}>
-                <input placeholder="Exercise name" value={ex.name} onChange={(e) => updateExercise(i, 'name', e.target.value)}
-                  className="rounded border border-[#333333] bg-[#222222] px-3 py-2 text-xs text-white placeholder-[#555555] focus:border-[#c8c8c8] focus:outline-none" />
-                <input placeholder="Sets" type="number" value={ex.sets} onChange={(e) => updateExercise(i, 'sets', e.target.value)} min="1"
-                  className="rounded border border-[#333333] bg-[#222222] px-3 py-2 text-xs text-white focus:border-[#c8c8c8] focus:outline-none" />
-                <input placeholder="Reps" type="number" value={ex.reps} onChange={(e) => updateExercise(i, 'reps', e.target.value)} min="1"
-                  className="rounded border border-[#333333] bg-[#222222] px-3 py-2 text-xs text-white focus:border-[#c8c8c8] focus:outline-none" />
-                <input placeholder="kg" type="number" step="0.5" value={ex.weight} onChange={(e) => updateExercise(i, 'weight', e.target.value)}
-                  className="rounded border border-[#333333] bg-[#222222] px-3 py-2 text-xs text-white focus:border-[#c8c8c8] focus:outline-none" />
-                <input placeholder="Rest (s)" type="number" value={ex.rest_time} onChange={(e) => updateExercise(i, 'rest_time', e.target.value)}
-                  className="rounded border border-[#333333] bg-[#222222] px-3 py-2 text-xs text-white focus:border-[#c8c8c8] focus:outline-none" />
-                <button type="button" onClick={() => removeExercise(i)} className="text-[#555555] hover:text-red-400 transition-colors text-lg leading-none">×</button>
+              <div key={i} className="rounded-lg bg-[#1a1a1a] p-3 space-y-2">
+                <div className="flex gap-2">
+                  <input placeholder="Exercise name" value={ex.name} onChange={(e) => updateExercise(i, 'name', e.target.value)}
+                    className="flex-1 rounded border border-[#333333] bg-[#222222] px-3 py-2 text-xs text-white placeholder-[#555555] focus:border-[#c8c8c8] focus:outline-none" />
+                  <button type="button" onClick={() => removeExercise(i)} className="shrink-0 px-2 text-[#555555] hover:text-red-400 transition-colors text-lg leading-none">×</button>
+                </div>
+                <div className="grid grid-cols-4 gap-2">
+                  <input placeholder="Sets" type="number" value={ex.sets} onChange={(e) => updateExercise(i, 'sets', e.target.value)} min="1"
+                    className="rounded border border-[#333333] bg-[#222222] px-2 py-2 text-xs text-white text-center focus:border-[#c8c8c8] focus:outline-none" />
+                  <input placeholder="Reps" type="number" value={ex.reps} onChange={(e) => updateExercise(i, 'reps', e.target.value)} min="1"
+                    className="rounded border border-[#333333] bg-[#222222] px-2 py-2 text-xs text-white text-center focus:border-[#c8c8c8] focus:outline-none" />
+                  <input placeholder="kg" type="number" step="0.5" value={ex.weight} onChange={(e) => updateExercise(i, 'weight', e.target.value)}
+                    className="rounded border border-[#333333] bg-[#222222] px-2 py-2 text-xs text-white text-center focus:border-[#c8c8c8] focus:outline-none" />
+                  <input placeholder="Rest s" type="number" value={ex.rest_time} onChange={(e) => updateExercise(i, 'rest_time', e.target.value)}
+                    className="rounded border border-[#333333] bg-[#222222] px-2 py-2 text-xs text-white text-center focus:border-[#c8c8c8] focus:outline-none" />
+                </div>
+                <div className="grid grid-cols-4 gap-2 px-1">
+                  {['Sets','Reps','kg','Rest s'].map(l => <p key={l} className="text-center text-[9px] text-[#555555] uppercase tracking-wider">{l}</p>)}
+                </div>
               </div>
             ))}
           </div>
