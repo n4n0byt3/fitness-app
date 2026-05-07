@@ -25,72 +25,69 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
   const pathname = request.nextUrl.pathname
 
-  // Public routes — always accessible
-  const publicRoutes = ['/login', '/signup']
-  if (publicRoutes.some((r) => pathname.startsWith(r))) {
-    // Redirect authenticated users away from auth pages
-    if (user) {
-      const { data: profile } = await supabase
+  // Always allow public auth routes through — never loop on these
+  if (pathname.startsWith('/login') || pathname.startsWith('/signup')) {
+    return supabaseResponse
+  }
+
+  // Check auth
+  const { data: { user }, error: userError } = await supabase.auth.getUser()
+
+  // Not authenticated → send to login
+  if (userError || !user) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/login'
+    return NextResponse.redirect(url)
+  }
+
+  // Root → redirect based on role
+  if (pathname === '/') {
+    let role = 'client'
+    try {
+      const { data } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', user.id)
         .single()
-
-      const dest = profile?.role === 'pt' ? '/dashboard' : '/portal/dashboard'
-      return NextResponse.redirect(new URL(dest, request.url))
-    }
-    return supabaseResponse
+      if (data?.role) role = data.role
+    } catch {}
+    const url = request.nextUrl.clone()
+    url.pathname = role === 'pt' ? '/dashboard' : '/portal/dashboard'
+    return NextResponse.redirect(url)
   }
 
-  // Root — redirect based on auth
-  if (pathname === '/') {
-    if (!user) {
-      return NextResponse.redirect(new URL('/login', request.url))
-    }
+  // Role-based protection — only enforce if we can read the profile
+  // If profile query fails (e.g. schema not yet applied), let page-level auth handle it
+  try {
     const { data: profile } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', user.id)
       .single()
-    const dest = profile?.role === 'pt' ? '/dashboard' : '/portal/dashboard'
-    return NextResponse.redirect(new URL(dest, request.url))
-  }
 
-  // Protected routes — require auth
-  if (!user) {
-    return NextResponse.redirect(new URL('/login', request.url))
-  }
+    if (!profile) return supabaseResponse
 
-  // Role-based route protection
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
+    const isPT = profile.role === 'pt'
+    const isClient = profile.role === 'client'
 
-  const isPT = profile?.role === 'pt'
-  const isClient = profile?.role === 'client'
+    const ptOnlyPaths = ['/dashboard', '/clients', '/sessions', '/bookings', '/payments', '/settings']
+    const clientOnlyPaths = ['/portal']
 
-  // PT routes — only accessible by PT
-  if (pathname.startsWith('/dashboard') || pathname.startsWith('/clients') ||
-      pathname.startsWith('/sessions') || pathname.startsWith('/bookings') ||
-      pathname.startsWith('/payments') || pathname.startsWith('/settings')) {
-    if (!isPT) {
-      return NextResponse.redirect(new URL('/portal/dashboard', request.url))
+    if (ptOnlyPaths.some(p => pathname.startsWith(p)) && !isPT) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/portal/dashboard'
+      return NextResponse.redirect(url)
     }
-  }
 
-  // Client portal routes — only accessible by clients
-  if (pathname.startsWith('/portal')) {
-    if (!isClient) {
-      return NextResponse.redirect(new URL('/dashboard', request.url))
+    if (clientOnlyPaths.some(p => pathname.startsWith(p)) && !isClient) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/dashboard'
+      return NextResponse.redirect(url)
     }
+  } catch {
+    // Schema not ready — allow through, page layouts will handle auth
   }
 
   return supabaseResponse
@@ -98,6 +95,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|api|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }

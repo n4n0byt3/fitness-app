@@ -4,7 +4,8 @@
       "Bash(npm install *)",
       "Bash(mkdir \"c:\\\\Users\\\\shivb\\\\Desktop\\\\coding bits\\\\fitness-app\\\\app\\\\\\(pt\\)\\\\clients\\\\[id]\")",
       "Bash(mkdir \"c:\\\\Users\\\\shivb\\\\Desktop\\\\coding bits\\\\fitness-app\\\\app\\\\api\\\\invoices\\\\[id]\\\\pdf\")",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(git add *)"
     ]
   }
 }
