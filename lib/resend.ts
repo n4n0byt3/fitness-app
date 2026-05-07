@@ -1,19 +1,22 @@
-import { Resend } from 'resend'
-
-function getResend() {
-  if (!process.env.RESEND_API_KEY) throw new Error('RESEND_API_KEY is not set')
-  return new Resend(process.env.RESEND_API_KEY)
-}
+import nodemailer from 'nodemailer'
 
 const brandName = process.env.NEXT_PUBLIC_BRAND_NAME || "L'Estrange Fitness"
 const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
 
-async function send(payload: Parameters<Resend['emails']['send']>[0]) {
-  const resend = getResend()
-  const { data, error } = await resend.emails.send(payload)
-  if (error) throw new Error(`Resend error: ${error.message}`)
-  return data
+function getTransporter() {
+  const user = process.env.GMAIL_USER
+  const pass = process.env.GMAIL_APP_PASSWORD
+  if (!user || !pass) throw new Error('GMAIL_USER or GMAIL_APP_PASSWORD is not set')
+  return nodemailer.createTransport({
+    service: 'gmail',
+    auth: { user, pass },
+  })
+}
+
+async function send({ to, subject, html }: { to: string; subject: string; html: string }) {
+  const transporter = getTransporter()
+  const from = `${brandName} <${process.env.GMAIL_USER}>`
+  await transporter.sendMail({ from, to, subject, html })
 }
 
 export async function sendBookingConfirmation({
@@ -30,7 +33,6 @@ export async function sendBookingConfirmation({
   sessionType: string
 }) {
   return send({
-    from: `${brandName} <${fromEmail}>`,
     to,
     subject: `Booking Confirmed — ${date} at ${time}`,
     html: `
@@ -66,7 +68,6 @@ export async function sendInvoiceNotification({
   paymentUrl: string
 }) {
   return send({
-    from: `${brandName} <${fromEmail}>`,
     to,
     subject: `Invoice — ${amount} due ${dueDate}`,
     html: `

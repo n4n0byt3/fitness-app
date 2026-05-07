@@ -1,27 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { Resend } from 'resend'
+import nodemailer from 'nodemailer'
 
 // DELETE THIS FILE after confirming emails work
 export async function GET(request: NextRequest) {
   const to = request.nextUrl.searchParams.get('to')
   if (!to) return NextResponse.json({ error: 'Pass ?to=your@email.com' }, { status: 400 })
 
-  const key = process.env.RESEND_API_KEY
-  const from = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
+  const user = process.env.GMAIL_USER
+  const pass = process.env.GMAIL_APP_PASSWORD
 
-  if (!key) return NextResponse.json({ error: 'RESEND_API_KEY not set' }, { status: 500 })
-
-  const resend = new Resend(key)
-  const { data, error } = await resend.emails.send({
-    from: `L'Estrange Fitness <${from}>`,
-    to,
-    subject: 'Test email from L\'Estrange Fitness',
-    html: '<p>If you got this, Resend is working correctly.</p>',
-  })
-
-  if (error) {
-    return NextResponse.json({ ok: false, error, from, keyPrefix: key.slice(0, 8) })
+  if (!user || !pass) {
+    return NextResponse.json({ error: 'GMAIL_USER or GMAIL_APP_PASSWORD not set' }, { status: 500 })
   }
 
-  return NextResponse.json({ ok: true, id: data?.id, from, keyPrefix: key.slice(0, 8) })
+  try {
+    const transporter = nodemailer.createTransport({ service: 'gmail', auth: { user, pass } })
+    await transporter.sendMail({
+      from: `L'Estrange Fitness <${user}>`,
+      to,
+      subject: 'Test email — L\'Estrange Fitness',
+      html: '<p>If you got this, Gmail sending is working correctly.</p>',
+    })
+    return NextResponse.json({ ok: true, from: user })
+  } catch (err: any) {
+    return NextResponse.json({ ok: false, error: err.message })
+  }
 }
