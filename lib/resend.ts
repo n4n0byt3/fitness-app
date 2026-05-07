@@ -7,6 +7,7 @@ function getResend() {
 
 const brandName = process.env.NEXT_PUBLIC_BRAND_NAME || "L'Estrange Fitness"
 const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
 
 export async function sendBookingConfirmation({
   to,
@@ -24,7 +25,7 @@ export async function sendBookingConfirmation({
   const resend = getResend()
   if (!resend) return
   return resend.emails.send({
-    from: `${brandName} <noreply@${new URL(appUrl).hostname}>`,
+    from: `${brandName} <${fromEmail}>`,
     to,
     subject: `Booking Confirmed — ${date} at ${time}`,
     html: `
@@ -62,7 +63,7 @@ export async function sendInvoiceNotification({
   const resend = getResend()
   if (!resend) return
   return resend.emails.send({
-    from: `${brandName} <noreply@${new URL(appUrl).hostname}>`,
+    from: `${brandName} <${fromEmail}>`,
     to,
     subject: `Invoice — ${amount} due ${dueDate}`,
     html: `
